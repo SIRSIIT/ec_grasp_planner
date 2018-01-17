@@ -26,6 +26,12 @@ class BaseHandArm(dict):
         self['isForceControllerAvailable'] = False
 
 
+class Kuka(BaseHandArm):
+    def __init__(self):
+        super(Kuka,self).__init__()
+        self['isForceControllerAvailable'] = True
+        self['surface_grasp']['initial_goal'] = tra.concatenate_matrices(tra.translation_matrix([0.5,0.0,0.8]),tra.euler_matrix(0,math.pi/2,0))
+
 class RBOHand2(BaseHandArm):
     def __init__(self):
         super(RBOHand2, self).__init__()
@@ -185,3 +191,20 @@ class RBOHand2Kuka(RBOHand2):
         self['edge_grasp']['downward_force'] = 4.0
         self['edge_grasp']['sliding_speed'] = 0.04
         self['edge_grasp']['valve_pattern'] = (np.array([[0,0],[0,0],[1,0],[1,0],[1,0],[1,0]]), np.array([[0, 3.0]]*6))
+
+class PisaKuka(Kuka):
+    def __init__(self, **kwargs):
+        super(PisaKuka,self).__init__();
+        self['surface_grasp']['object']['hand_transform'] = tra.concatenate_matrices(tra.translation_matrix([0.0, -0.05, 0.3]),
+                                                                                tra.concatenate_matrices(
+                                                                                    tra.rotation_matrix(
+                                                                                        math.radians(90.), [0, 0, 1]),
+                                                                                    tra.rotation_matrix(
+                                                                                        math.radians(180.), [1, 0, 0])))
+
+        self['surface_grasp']['object']['pregrasp_pose'] = tra.concatenate_matrices(tra.translation_matrix([0,0,0.5]),tra.euler_matrix(0,math.pi/2,0))
+        self['surface_grasp']['object']['hand_pose'] = tra.concatenate_matrices(tra.translation_matrix([0, 0, 0.15]), tra.rotation_matrix(math.radians(0.), [0, 0, 1]))
+        self['surface_grasp']['object']['downward_force'] = 7.
+        self['edge_grasp']['object']['hand_object_pose'] = tra.concatenate_matrices(tra.translation_matrix([0, 0, 0.05]), tra.rotation_matrix(math.radians(10.), [1, 0, 0]), tra.euler_matrix(0, 0, -math.pi / 2.))
+
+
